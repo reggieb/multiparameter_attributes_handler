@@ -1,0 +1,43 @@
+== Multiparameter Attributes Handler
+
+Rails form helpers for time, datetime and date return multiparameter attributes
+that ActiveRecord objects are able to convert into parent attributes. 
+
+For example
+
+    date_select(:thing, :last_read)
+
+when set to 24th June 2004, will generate
+
+   'thing' => {
+        "last_read(1i)" => "2004", 
+        "last_read(2i)" => "6", 
+        "last_read(3i)" => "24"
+   }
+    
+ActiveRecord understands this and converts these key/value pairs into a date
+object that is passed to thing.last_record=
+
+Multiparameter Attributes Handler allows other objects to do the same. For
+example, ActiveResource models.
+
+It does this by modifying the way attributes= works. So for the above example,
+the values passed down the attributes= chain gets converted to:
+
+   'thing' => {
+        "last_read(1i)" => "2004", 
+        "last_read(2i)" => "6", 
+        "last_read(3i)" => "24",
+        "last_read"     => Time.local('2004', '6', '24')
+   }
+
+So for a ActiveResource Thing, this functionality is added like this:
+
+    class Thing < ActiveResource::Base
+      include MultiparameterAttributesHandler
+    end
+
+This functionality is made available via the multiparameter_attributes_handler 
+gem. So add this to your gemfile:
+
+    gem 'multiparameter_attributes_handler'
