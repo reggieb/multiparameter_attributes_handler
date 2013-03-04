@@ -1,0 +1,17 @@
+== Useful information
+
+=== ActiveRecord functionality
+
+Can be found in the module ActiveRecord::AttributeAssignment
+
+https://github.com/rails/rails/blob/master/activerecord/lib/active_record/attribute_assignment.rb
+
+Errors raised by this code can be found here:
+
+https://github.com/rails/rails/blob/master/activerecord/lib/active_record/errors.rb
+
+And the functionality is tested in
+
+https://github.com/rails/rails/blob/master/activerecord/test/cases/multiparameter_attributes_test.rb
+
+These tests form the starting point for the construction of MultiparameterAttributesHandler
