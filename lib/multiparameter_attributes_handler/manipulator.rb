@@ -24,12 +24,7 @@ module MultiparameterAttributesHandler
     def value_of(multiparameter)
       values = values_for(multiparameter)
       return values unless values.kind_of? Array
-      begin
-        Time.local(*values)
-      rescue => e
-        msg = "Error determining value_of #{multiparameter} from #{values} (#{e.message})"
-        raise_assignment_errors(multiparameter, values, msg, e)
-      end
+      convert_to_time(multiparameter, values)
     end
     
     def output
@@ -41,39 +36,55 @@ module MultiparameterAttributesHandler
         errors << e
       end
       return hash if errors.empty?
-      
-      error_descriptions = errors.collect { |ex| ex.message }.join(",")
-      msg = "#{errors.size} error(s) on determining value of multiparameter attributes [#{error_descriptions}]"
-      raise MultiparameterAssignmentErrors.new(errors), msg
+      raise_combined_error(errors)
     end
     
     private
-    def ends_with_number_letter_in_brackets
-      /\(\d+\w+\)$/
+    def convert_to_time(multiparameter, values)
+      begin
+        Time.local(*values)
+      rescue => e
+        msg = "Error determining value_of #{multiparameter} from #{values} (#{e.message})"
+        raise_assignment_errors(multiparameter, values, msg, e)
+      end
     end
     
     def multiparameter_keys
       hash.keys.select{|k| k =~ ends_with_number_letter_in_brackets}
     end
     
+    def ends_with_number_letter_in_brackets
+      /\(\d+\w+\)$/
+    end    
+    
     def keys_for(multiparameter)
       keys = multiparameter_keys.select{|k| /^#{multiparameter}\(/ =~ k}
-      match = keys.first.match(/\(\d+(\w*)\)/)
-      postscript = match ? match[1] : ""
+      add_missing_keys_for(multiparameter, keys)
+      return keys.sort if sequence_starting_at_one?(keys)
+      
+      raise_assignment_errors(
+        multiparameter, 
+        keys, 
+        "key number sequence incomplete or not starting at one"
+      )
+      
+    end
+    
+    def add_missing_keys_for(multiparameter, keys)
+      postscript = characters_after_sequence_number(keys.first)
       numbers = sequence_numbers(keys)
       (1..numbers.last).each do |number|
-        next if number < 3
+        next if number < 3 # don't replace missing date keys
         next if numbers.include? number
         key = "#{multiparameter}(#{number}#{postscript})"
         hash[key] = '00'
         keys << key
       end
-      raise_assignment_errors(
-        multiparameter, 
-        keys, 
-        "key number sequence incomplete or not starting at one"
-      ) unless sequence_starting_at_one?(keys)
-      keys.sort
+    end
+    
+    def characters_after_sequence_number(sample_key)
+      match = sample_key.match(/\(\d+(\w*)\)/)
+      match ? match[1] : ""
     end
     
     def empty_date_values_for?(multiparameter)
@@ -99,5 +110,11 @@ module MultiparameterAttributesHandler
       msg = "Error determining value_of #{multiparameter} from #{values} (#{message})"
       raise AttributeAssignmentError.new(error, multiparameter), msg
     end
+    
+    def raise_combined_error(errors)
+      error_descriptions = errors.collect { |ex| ex.message }.join(",")
+      msg = "#{errors.size} error(s) on determining value of multiparameter attributes [#{error_descriptions}]"
+      raise MultiparameterAssignmentErrors.new(errors), msg
+    end    
   end
 end
