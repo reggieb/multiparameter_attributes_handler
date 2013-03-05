@@ -1,5 +1,7 @@
 == Multiparameter Attributes Handler
 
+=== Background
+
 Rails form helpers for time, datetime and date return multiparameter attributes
 that ActiveRecord objects are able to convert into parent attributes. 
 
@@ -18,8 +20,10 @@ when set to 24th June 2004, will generate
 ActiveRecord understands this and converts these key/value pairs into a date
 object that is passed to thing.last_record=
 
-Multiparameter Attributes Handler allows other objects to do the same. For
-example, ActiveResource models.
+=== A solution without ActiveRecord
+
+Multiparameter Attributes Handler allows other objects to do the same. In 
+particular, ActiveResource models.
 
 It does this by modifying the way attributes= works. So for the above example,
 the values passed down the attributes= chain gets converted to:
@@ -37,7 +41,45 @@ So for a ActiveResource Thing, this functionality is added like this:
       include MultiparameterAttributesHandler
     end
 
+=== Only setter affected
+
+Note that this gem provides handling of the parameters received from the form
+submission. For the form helpers to work, they need to passed a date or time
+to the form.
+
+One solution is to over-ride the getter in the model. So for the Thing example
+above, the complete solution would look like this:
+
+    require 'date'
+    class Thing < ActiveResource::Base
+      include MultiparameterAttributesHandler
+
+      def last_read
+        Date.parse(super)
+      end
+    end 
+
+Rails form date helpers will then work for last_read:
+
+    date_select(:thing, :last_read)
+
+And in the controller's create and update methods:
+
+    thing.attributes = params[:thing]
+
+Or
+
+    Thing.new(params[:thing])
+
+Or
+
+    thing.update_attributes(params[:thing])
+
+
+=== Installation
+
 This functionality is made available via the multiparameter_attributes_handler 
 gem. So add this to your gemfile:
 
     gem 'multiparameter_attributes_handler'
+
