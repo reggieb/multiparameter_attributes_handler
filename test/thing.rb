@@ -1,16 +1,16 @@
 require_relative '../lib/multiparameter_attributes_handler'
 
-class Parent
-  attr_accessor :attributes
-end
-
-
-class Thing < Parent
+class Thing
   
-  include MultiparameterAttributesHandler
+  attr_reader :attributes
+  
   
   def initialize
     
+  end
+  
+  def attributes=(params)
+    @attributes = MultiparameterAttributesHandler.manipulate_all(params)
   end
 end
 

@@ -18,27 +18,50 @@ when set to 24th June 2004, will generate
    }
     
 ActiveRecord understands this and converts these key/value pairs into a date
-object that is passed to thing.last_record=
+object that is passed to thing.last_read=
 
 === A solution without ActiveRecord
 
-Multiparameter Attributes Handler allows other objects to do the same. In 
-particular, ActiveResource models.
+Multiparameter Attributes Handler allows other objects to do the same.
 
-It does this by modifying the way attributes= works. So for the above example,
-the values passed down the attributes= chain gets converted to:
+    thing_params = MultiparameterAttributesHandler.manipulate_all(params[:thing])
 
-   'thing' => {
+This creates a last_read key with a time object derived from the values
+
+    thing_params == {
         "last_read(1i)" => "2004", 
         "last_read(2i)" => "6", 
         "last_read(3i)" => "24",
         "last_read"     => Time.local('2004', '6', '24')
-   }
+    }
 
-So for a ActiveResource Thing, this functionality is added like this:
+So for a ActiveResource Thing, this functionality can be added by over-riding
+the attributes setter:
 
     class Thing < ActiveResource::Base
-      include MultiparameterAttributesHandler
+      def attributes=(params)
+        super MultiparameterAttributesHandler.manipulate_all(params)
+      end
+    end
+
+However, as the params splitting and rebuilding is happening in the views and
+controller space, it might well make more sense to do the manipulation in the
+controller:
+
+    class ThingsController < ApplicationController
+
+      ....
+
+      def update
+        @thing = Thing.find(params[:id])
+        @property.update_attributes thing_params
+        redirect_to @property
+      end
+
+      private
+      def thing_params
+        MultiparameterAttributesHandler.manipulate_all(params[:thing])
+      end
     end
 
 === Only setter affected
@@ -47,34 +70,20 @@ Note that this gem provides handling of the parameters received from the form
 submission. For the form helpers to work, they need to passed a date or time
 to the form.
 
-One solution is to over-ride the getter in the model. So for the Thing example
-above, the complete solution would look like this:
+One solution is to override the getter in the model. So for the Thing example
+above:
 
     require 'date'
     class Thing < ActiveResource::Base
-      include MultiparameterAttributesHandler
 
       def last_read
-        Date.parse(super)
+        Time.parse(super)
       end
     end 
 
 Rails form date helpers will then work for last_read:
 
-    date_select(:thing, :last_read)
-
-And in the controller's create and update methods:
-
-    thing.attributes = params[:thing]
-
-Or
-
-    Thing.new(params[:thing])
-
-Or
-
-    thing.update_attributes(params[:thing])
-
+    datetime_select(:thing, :last_read)
 
 === Installation
 
