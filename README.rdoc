@@ -67,13 +67,11 @@ controller:
 === Only setter affected
 
 Note that this gem provides handling of the parameters received from the form
-submission. For the form helpers to work, they need to passed a date or time
-to the form.
+submission. For the form helpers to work, they need to be passed a date or time.
 
 One solution is to override the getter in the model. So for the Thing example
 above:
 
-    require 'date'
     class Thing < ActiveResource::Base
 
       def last_read
@@ -83,7 +81,7 @@ above:
 
 Rails form date helpers will then work for last_read:
 
-    datetime_select(:thing, :last_read)
+    date_select(:thing, :last_read)
 
 === Installation
 
