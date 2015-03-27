@@ -1,10 +1,11 @@
 module MultiparameterAttributesHandler
   class Manipulator
     
-    attr_accessor :hash
+    attr_accessor :hash, :value_mod
     
-    def initialize(hash)
+    def initialize(hash, &value_mod)
       @hash = hash
+      @value_mod = value_mod
     end
     
     def multiparameters
@@ -24,7 +25,9 @@ module MultiparameterAttributesHandler
     def value_of(multiparameter)
       values = values_for(multiparameter)
       return values unless values.kind_of? Array
-      convert_to_time(multiparameter, values)
+      time = convert_to_time(multiparameter, values)
+      return time unless value_mod
+      value_mod.call(time)
     end
     
     def output
