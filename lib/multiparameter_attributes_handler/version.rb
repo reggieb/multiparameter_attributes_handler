@@ -1,11 +1,11 @@
 module MultiparameterAttributesHandler
-  VERSION = "0.0.3"
+  VERSION = "0.1.0"
 end
 
 # History
 # =======
 # 
-# 0.0.3: Allowed a block to be user to modify the output
+# 0.1.0: Allowed a block to be user to modify the output
 # ------------------------------------------------------
 # A use case was found where the resulting data needed to be stored as a 
 # string, rather than a date. As there may be other ways the output needs
