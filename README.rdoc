@@ -26,7 +26,7 @@ Multiparameter Attributes Handler allows other objects to do the same.
 
     thing_params = MultiparameterAttributesHandler.manipulate_all(params[:thing])
 
-This creates a last_read key with a time object derived from the values
+This creates a last_read key with a date object derived from the values
 
     thing_params == {
         "last_read(1i)" => "2004", 
