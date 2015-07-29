@@ -32,8 +32,11 @@ This creates a last_read key with a time object derived from the values
         "last_read(1i)" => "2004", 
         "last_read(2i)" => "6", 
         "last_read(3i)" => "24",
-        "last_read"     => Time.local('2004', '6', '24')
+        "last_read"     => Date.new(2004, 6, 24)
     }
+
+Note that if hours and minutes are also present, the derived value will be a
+Time object.
 
 So for a ActiveResource Thing, this functionality can be added by over-riding
 the attributes setter:

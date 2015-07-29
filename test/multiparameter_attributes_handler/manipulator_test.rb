@@ -45,8 +45,11 @@ module MultiparameterAttributesHandler
     end
     
     def test_value_of_multiparameter
-      assert_equal(Time.local(*@manipulator.values_for('last_read')), @manipulator.value_of('last_read'))
       assert_equal(Time.local(*@manipulator.values_for('other')), @manipulator.value_of('other'))
+    end
+
+    def test_value_of_multiparameter_when_date
+      assert_equal(Date.new(*@manipulator.values_for('last_read').collect(&:to_i)), @manipulator.value_of('last_read'))
     end
     
     def test_output_returns_original_content     

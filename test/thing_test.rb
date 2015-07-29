@@ -15,7 +15,7 @@ class ThingTest < Test::Unit::TestCase
     @thing.attributes = attributes
     # note that extra #to_date call allows test to pass for Oracle, which
     # treats dates/times the same
-    assert_equal Time.local(2004, 6, 24), @thing.attributes['last_read']
+    assert_equal Date.new(2004, 6, 24), @thing.attributes['last_read']
   end
 
   def test_multiparameter_attributes_on_date_with_empty_year

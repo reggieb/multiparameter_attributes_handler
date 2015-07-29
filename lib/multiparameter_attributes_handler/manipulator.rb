@@ -42,7 +42,11 @@ module MultiparameterAttributesHandler
     private
     def convert_to_time(multiparameter, values)
       begin
-        Time.local(*values)
+        if values.length == 3
+          Date.new *values.collect(&:to_i)
+        else
+          Time.local *values
+        end
       rescue => e
         msg = "Error determining value_of #{multiparameter} from #{values} (#{e.message})"
         raise_assignment_errors(multiparameter, values, msg, e)

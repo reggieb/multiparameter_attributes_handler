@@ -10,9 +10,9 @@ Gem::Specification.new do |s|
   s.authors     = ["Rob Nichols"]
   s.email       = ["rob@undervale.co.uk"]
   s.homepage    = "https://github.com/reggieb/multiparameter_attributes_handler"
-  s.summary     = "Allows objects with attributes, to handle multiparameter params"
-  s.description = "Rails forms helpers for date and time fields generate multiparameter params. multiparameter_attributes_handler allows objects to assign these to thier attributes,"
-
+  s.summary     = "Allows non-active_record objects to handle multiparameter params"
+  s.description = "Rails forms helpers for date and time fields generate multiparameter params. multiparameter_attributes_handler allows objects to use these params."
+  s.license = 'MIT-LICENSE'
   s.files = Dir["lib/**/*"] + ["MIT-LICENSE", "Rakefile", "README.rdoc"]
   s.test_files = Dir["test/**/*"]
 end
