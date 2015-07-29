@@ -1,6 +1,6 @@
-== Multiparameter Attributes Handler
+= Multiparameter Attributes Handler
 
-=== Background
+== Background
 
 Rails form helpers for time, datetime and date return multiparameter attributes
 that ActiveRecord objects are able to convert into parent attributes. 
@@ -18,9 +18,9 @@ when set to 24th June 2004, will generate
    }
     
 ActiveRecord understands this and converts these key/value pairs into a date
-object that is passed to thing.last_read=
+object that is passed to thing#last_read= method.
 
-=== A solution without ActiveRecord
+== A solution without ActiveRecord
 
 Multiparameter Attributes Handler allows other objects to do the same.
 
@@ -38,6 +38,24 @@ This creates a last_read key with a time object derived from the values
 Note that if hours and minutes are also present, the derived value will be a
 Time object.
 
+=== Modifying the output
+
+If you need to modify the derived values, pass a block to manipulate_all, and
+that will be called on each output value.
+
+  thing_params = MultiparameterAttributesHandler.manipulate_all(params[:thing], &:to_s)
+
+Will create
+
+    thing_params == {
+        "last_read(1i)" => "2004", 
+        "last_read(2i)" => "6", 
+        "last_read(3i)" => "24",
+        "last_read"     => Date.new('2004', '6', '24').to_s
+    }
+
+== An ActiveResource example
+
 So for a ActiveResource Thing, this functionality can be added by over-riding
 the attributes setter:
 
@@ -46,6 +64,8 @@ the attributes setter:
         super MultiparameterAttributesHandler.manipulate_all(params)
       end
     end
+
+== Use within a Rails controller 
 
 However, as the params splitting and rebuilding is happening in the views and
 controller space, it might well make more sense to do the manipulation in the
@@ -67,7 +87,7 @@ controller:
       end
     end
 
-=== Only setter affected
+== Only setter affected
 
 Note that this gem provides handling of the parameters received from the form
 submission. For the form helpers to work, they need to be passed a date or time.
@@ -86,7 +106,7 @@ Rails form date helpers will then work for last_read:
 
     date_select(:thing, :last_read)
 
-=== Installation
+== Installation
 
 This functionality is made available via the multiparameter_attributes_handler 
 gem. So add this to your gemfile:

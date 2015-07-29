@@ -1,11 +1,11 @@
 module MultiparameterAttributesHandler
-  VERSION = "0.0.3"
+  VERSION = "0.1.1"
 end
 
 # History
 # =======
 #
-# 0.0.3: Returns Date object if only multiparameter only has three elements
+# 0.1.1: Returns Date object if only multiparameter only has three elements
 # -------------------------------------------------------------------------
 #
 # A problem was identified where summer time caused a problem with hour offsets
@@ -13,6 +13,13 @@ end
 #
 # The new logic is that if date and time are contained in the multiparameter,
 # a Time object is returned. If only date is present, a date object is returned
+# 
+# 0.1.0: Allowes a block to be user to modify the output
+# ------------------------------------------------------
+# A use case was found where the resulting data needed to be stored as a 
+# string, rather than a date. As there may be other ways the output needs
+# modifying, this functionality was added by allowing a block to be
+# passed to manipulate_all.
 # 
 # 0.0.2: Modified usage so that developer decides where manipulation happens
 # ---------------------------------------------------------------------------
